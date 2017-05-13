@@ -16,12 +16,12 @@ redis_requirements: ['build-essential', 'tcl8.5']
 redis_run_make_test: True
 
 ## Configuration parameters
-redis_protected_mode: yes # set to no if you want to allow external connections
+redis_protected_mode: 'yes' # set to no if you want to allow external connections
 redis_tcp_backlog: 511
 redis_use_socket: False
 redis_idle_timeout: 0
 redis_tcp_keepalive: 300
-redis_daemonize: yes
+redis_daemonize: 'yes'
 redis_loglevel: warning # or debug,verbose,notice
 redis_databases: 16
 redis_save_to_disk_interval:
@@ -31,15 +31,15 @@ redis_save_to_disk_interval:
       changes: 10
     - seconds: 60
       changes: 10000
-redis_compress_rdb: yes
-redis_rdb_checksum: yes
+redis_compress_rdb: 'yes'
+redis_rdb_checksum: 'yes'
 redis_mode: master # or slave
 redis_master_pass: none
 ## Limits
 redis_max_clients: 10000
 redis_max_memory: 0 # set max ram in bytes
 redis_max_mem_policy: volatile-random # or allkeys-lru, volatile-random, allkeys-random, volatile-lru noeviction
-redis_appendonly: yes
+redis_appendonly: 'yes'
 redis_appendfsync: everysec # or no or always
 redis_aof_rewrite_percent: 100
 redis_aof_rewrite_min: 64mb

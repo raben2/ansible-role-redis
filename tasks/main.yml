@@ -17,6 +17,17 @@
     system: True
     home: "{{ redis_install_dir }}"
 
+- name: allow redis group user to su - redis
+  copy:
+    dest: /etc/sudoers.d/redis
+    content: |
+      {{ redis_group }} ALL=(ALL:{{ redis_user }}) NOPASSWD:ALL
+      {{ redis_user }} ALL=(ALL:ALL) NOPASSWD:/bin/systemctl start redis.service
+      {{ redis_user }} ALL=(ALL:ALL) NOPASSWD:/bin/systemctl stop redis.service
+    owner: root
+    group: root
+    mode: 0440
+
 - name: ensure directories
   file:
     state: directory

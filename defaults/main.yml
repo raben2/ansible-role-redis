@@ -6,13 +6,14 @@ redis_install_dir: /usr/local/redis
 redis_conf_dir: /etc/redis
 redis_bin_dir: "{{ redis_install_dir }}/bin"
 redis_data_dir: "{{ redis_install_dir }}/data"
-redis_pid_dir: /run/redis
+redis_pid_dir: "{{ redis_run_dir }}/redis"
 redis_bind_address: 0.0.0.0
 redis_port: 6379
 redis_user: redis
 redis_group: redis
 redis_binarys: ['redis-benchmark', 'redis-check-aof', 'redis-check-rdb', 'redis-cli', 'redis-server' ]
 redis_requirements: ['build-essential', 'tcl8.5']
+redis_run_make_test: True
 
 ## Configuration parameters
 redis_protected_mode: yes # set to no if you want to allow external connections

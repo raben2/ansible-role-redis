@@ -58,6 +58,7 @@
   command: 'taskset -c 0 make test'
   args:
     chdir: "{{ redis_src_dir }}/redis-{{ redis_release }}/src"
+  when: redis_run_make_test
 
 - name: copy redis binarys to bin dir
   copy:

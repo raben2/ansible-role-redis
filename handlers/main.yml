@@ -7,5 +7,5 @@
 
 - name: start redis
   systemd: 
-    state: stared
+    state: started
     name: redis

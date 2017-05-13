@@ -1,1 +1,2 @@
 redis_systemd_path: /lib/systemd/system
+redis_run_dir: /run

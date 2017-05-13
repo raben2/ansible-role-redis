@@ -1,0 +1,19 @@
+Description=Redis In-Memory Data Store                       
+After=network.target                                         
+                                                             
+[Service]                                                    
+Type=forking                                                 
+User={{ redis_user }}                                                   
+Group={{ redis_group }}
+StandardOutput=journal
+StandardError=journal                                                                   
+PermissionsStartOnly=true                                    
+PIDFile={{ redis_pid_dir }}/redis.pid                                           
+ExecStart={{ redis_bin_dir }}/redis-server {{ redis_conf_dir }}/redis.conf  
+ExecStop=/{{ redis_bin_dir }}/redis-cli shutdown                   
+ExecReload=/bin/kill -USR2 $MAINPID                          
+Restart=always                                               
+RestartSec=3                                                 
+                                                             
+[Install]                                                    
+WantedBy=multi-user.target      

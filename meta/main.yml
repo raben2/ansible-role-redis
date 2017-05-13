@@ -1,0 +1,19 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Georg Rabenstein @raben2
+  description: Install redis from source on Debian based systems
+  license: LGPL
+  min_ansible_version: 2.3
+  platforms:
+    - name: Debian
+      versions:
+      - all
+    - name: Ubuntu
+      versions:
+      - all
+  galaxy_tags:
+    - noSQL
+    - KeyValue
+    - redis

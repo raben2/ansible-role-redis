@@ -1,0 +1,54 @@
+redis_release: stable
+redis_download_mirror: http://download.redis.io/releases/
+redis_download_dir: /tmp
+redis_src_dir: /usr/src
+redis_install_dir: /usr/local/redis
+redis_conf_dir: /etc/redis
+redis_bin_dir: "{{ redis_install_dir }}/bin"
+redis_data_dir: "{{ redis_install_dir }}/data"
+redis_pid_dir: /run/redis
+redis_bind_address: 0.0.0.0
+redis_port: 6379
+redis_user: redis
+redis_group: redis
+redis_binarys: ['redis-benchmark', 'redis-check-aof', 'redis-check-rdb', 'redis-cli', 'redis-server' ]
+redis_requirements: ['build-essential', 'tcl8.5']
+
+## Configuration parameters
+redis_protected_mode: yes # set to no if you want to allow external connections
+redis_tcp_backlog: 511
+redis_use_socket: False
+redis_idle_timeout: 0
+redis_tcp_keepalive: 300
+redis_daemonize: yes
+redis_loglevel: warning # or debug,verbose,notice
+redis_databases: 16
+redis_save_to_disk_interval:
+    - seconds: 900
+      changes: 1
+    - seconds: 300
+      changes: 10
+    - seconds: 60
+      changes: 10000
+redis_compress_rdb: yes
+redis_rdb_checksum: yes
+redis_mode: master # or slave
+redis_master_pass: none
+## Limits
+redis_max_clients: 10000
+redis_max_memory: 0 # set max ram in bytes
+redis_max_mem_policy: volatile-random # or allkeys-lru, volatile-random, allkeys-random, volatile-lru noeviction
+redis_appendonly: yes
+redis_appendfsync: everysec # or no or always
+redis_aof_rewrite_percent: 100
+redis_aof_rewrite_min: 64mb
+redis_lua_exec_time: 5000
+redis_slowlog_indicator: 10000 #ms 
+redis_slowlog_max: 128
+
+## Slave configuration 
+redis_master_hosts: []
+# configure your master instances here to connnect as slave
+# - host: 192.168.1.1
+#   port: 6333
+redis_slave_priority: 100

@@ -1,0 +1,95 @@
+- include_vars: "{{ ansible_os_family }}.yml"
+- name: install requirements
+  apt:
+    state: installed
+    name: "{{ item }}"
+  with_items:
+    - "{{ redis_requirements }}"
+- name: add redis group
+  group:
+    state: present
+    name: "{{ redis_group }}"   
+- name: add redis user
+  user:
+    state: present
+    groups:  "{{ redis_group }}"
+    name: "{{ redis_user }}"
+    system: True
+    home: "{{ redis_install_dir }}"
+
+- name: ensure directories
+  file:
+    state: directory
+    dest: "{{ item }}"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+  with_items:
+     - "{{ redis_install_dir }}"
+     - "{{ redis_data_dir }}"
+     - "{{ redis_conf_dir }}"
+     - "{{ redis_bin_dir }}"
+- name: update path for redis user
+  copy: 
+    dest: "{{ redis_install_dir }}/.profile"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+    mode: 0770
+    content: "PATH=$PATH:{{ redis_bin_dir }}"
+
+- name: get the redis release
+  get_url:
+    url: "{{ redis_download_mirror }}/redis-{{ redis_release }}.tar.gz"
+    dest: "{{ redis_download_dir }}"
+
+- name: extract to src dir
+  unarchive:
+    remote_src: True
+    src: "{{ redis_download_dir }}/redis-{{ redis_release }}.tar.gz"
+    dest: "{{ redis_src_dir }}"
+    creates: "{{ redis_download_dir }}/redis-{{ redis_release }}/00-RELEASENOTES"
+
+- name: run make
+  command: 'make'
+  args:
+    chdir: "{{ redis_src_dir }}/redis-{{ redis_release }}/src"
+    creates: "{{ redis_src_dir }}/redis-{{ redis_release }}/src/redis-cli"
+
+- name: make test
+  command: 'taskset -c 0 make test'
+  args:
+    chdir: "{{ redis_src_dir }}/redis-{{ redis_release }}/src"
+
+- name: copy redis binarys to bin dir
+  copy:
+    remote_src: True
+    src: "{{ redis_src_dir }}/redis-{{ redis_release }}/src/{{ item }}"
+    dest: "{{ redis_bin_dir }}/{{ item }}"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+    mode: 0750
+  with_items: 
+    - "{{ redis_binarys }}"
+
+- name: create systemd service file
+  template:
+    dest: "{{ redis_systemd_path }}/redis.service"
+    src: redis.service.j2
+  notify:
+    - enable redis
+
+- name: create redis configuration
+  template:
+    dest: "{{ redis_conf_dir }}/redis.conf"
+    src: redis.conf.j2
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+  notify:
+    - start redis
+
+- name: cleanup
+  file: 
+    state: absent
+    name: "{{ item }}"
+  with_items:
+    - "{{ redis_src_dir }}/redis-{{ redis_release }}"
+    - "{{ redis_download_dir }}/redis-{{ redis_release }}.tar.gz"

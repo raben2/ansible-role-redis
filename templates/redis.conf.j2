@@ -1,0 +1,83 @@
+# Redis configuration 
+# {{ ansible_managed }}
+
+bind {{ redis_bind_address }}
+protected-mode {{ redis_protected_mode }}
+port {{ redis_port }}
+tcp-backlog {{ redis_tcp_backlog }}
+
+{% if redis_use_socket %}
+unixsocket {{ redis_pid_dir }}/redis.sock
+unixsocketperm 700
+{% endif %}
+
+timeout {{ redis_idle_timeout }}
+tcp-keepalive {{ redis_tcp_keepalive }}
+daemonize {{ redis_daemonize }}
+supervised systemd
+
+pidfile {{ redis_pid_dir }}/redis.pid
+loglevel {{ redis_loglevel }}
+logfile ""
+databases {{ redis_databases }}
+{% for item in redis_save_to_disk_interval %}
+save {{ item.seconds }} {{ item.changes }}
+{% endfor %}
+stop-writes-on-bgsave-error yes
+rdbcompression {{ redis_compress_rdb }}
+rdbchecksum {{ redis_rdb_checksum }}
+
+dbfilename dump.rdb
+
+dir {{ redis_data_dir }}
+{% if redis_mode == 'slave' %}
+{% for item in redis_master_hosts %}
+slaveof {{ item.host }} {{ item.port }}
+{% endfor %}
+{% if redis_master_pass != 'none' %} 
+masterauth {{ redis_master_pass }}
+{% endif %}
+slave-serve-stale-data yes
+slave-read-only yes
+repl-diskless-sync no
+repl-diskless-sync-delay 5
+repl-disable-tcp-nodelay no
+slave-priority {{ redis_slave_priority }}
+{% else %}
+{% if redis_master_pass != 'none' %} 
+requirepass {{ redis_master_pass }}
+{% endif %}
+{% endif %}
+
+maxclients {{ redis_max_clients }}
+{% if redis_max_memory <= 0 %}  
+maxmemory {{ redis_max_memory }}
+{% endif %}
+maxmemory-policy {{ redis_max_mem_policy }}
+appendonly {{ redis_appendonly }}
+appendfilename "appendonly.aof"
+appendfsync {{ redis_appendfsync }}
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage {{ redis_aof_rewrite_percent }}
+auto-aof-rewrite-min-size {{ redis_aof_rewrite_min }}
+aof-load-truncated yes
+lua-time-limit {{ redis_lua_exec_time }}
+slowlog-log-slower-than {{ redis_slowlog_indicator }}
+slowlog-max-len {{ redis_slowlog_max }}
+## EXTENDED CONF PARAMETERS NOT IMPLEMENTED
+latency-monitor-threshold 0
+notify-keyspace-events ""
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+list-max-ziplist-size -2
+list-compress-depth 0
+set-max-intset-entries 512
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+hll-sparse-max-bytes 3000
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+hz 10
+aof-rewrite-incremental-fsync yes

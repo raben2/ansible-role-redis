@@ -1,0 +1,11 @@
+- name: enable redis
+  systemd:
+    state: stopped
+    name: redis
+    enabled: yes
+    daemon_reload: yes
+
+- name: start redis
+  systemd: 
+    state: stared
+    name: redis

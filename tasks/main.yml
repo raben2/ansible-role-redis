@@ -29,7 +29,7 @@
      - "{{ redis_conf_dir }}"
      - "{{ redis_bin_dir }}"
      - "{{ redis_pid_dir }}"
-     
+
 - name: update path for redis user
   copy: 
     dest: "{{ redis_install_dir }}/.profile"

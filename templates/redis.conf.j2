@@ -15,7 +15,8 @@ timeout {{ redis_idle_timeout }}
 tcp-keepalive {{ redis_tcp_keepalive }}
 daemonize {{ redis_daemonize }}
 supervised systemd
-
+unixsocket {{ redis_pid_dir }}redis.sock
+unixsocketperm 770
 pidfile {{ redis_pid_dir }}/redis.pid
 loglevel {{ redis_loglevel }}
 logfile ""

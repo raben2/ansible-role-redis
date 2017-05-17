@@ -1,4 +1,4 @@
-- include_vars: "{{ ansible_os_family }}.yml"
+:- include_vars: "{{ ansible_os_family }}.yml"
 - name: install requirements
   apt:
     state: installed
@@ -99,7 +99,10 @@
     group: "{{ redis_group }}"
   notify:
     - start redis
-
+- name: configure tmpfiles.d
+  copy:
+    dest: /etc/tmpfiles.d/redis.conf
+    content: "d {{ redis_pid_dir }} 0770 {{ redis_user }} {{ redis_group }}"
 - name: cleanup
   file: 
     state: absent
